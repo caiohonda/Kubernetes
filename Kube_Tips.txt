@@ -1,0 +1,116 @@
+Containers: Docker
+    1. Hardware
+    2. Kernel OS
+    3. Docker: Package, template, plan 
+    4. Container (Libs+Deps, App)
+    
+Kubernetes: Orchestration of Containers
+    Architecture: Cluster (Master Node + Worker Node)
+        Master
+        API Server: communication app and cluster
+        etcd: log of cluster
+        Scheduler: assign work to nodes
+        Controller: manage nodes creation or go down 
+        Worker
+        Container Runtime: software to run containers
+        kubelet: agent status of each node
+    POD: apps container instance inside node
+    
+    kubectl run hellp-minikube
+    kubectl cluster-info
+    kubectl get nodes
+    kubectl run nginx --image=nginx
+    kubectl get pods
+    kubectl create -f pod-definition.yml
+    kubectl get pods
+    kubectl describe pod myapp-pod
+    root@controlplane:~# kubectl run redis --image=redis123 --dry-run=client -o yaml > redis-definition.yaml
+    kubectl get replicationcontroller
+    kubectl replace -f replicaset-definition.yml #update config
+    kubectl scale --replicas=6 -f replicaset-definition.yml
+    
+apiVersion: v1
+kind: Pod
+metadata:
+    name: nginx
+    labels:
+        env: production
+spec:
+    containers:
+        - name: nginx
+          image: nginx
+        - name: busybox
+          image: busybox
+
+Replication controller
+Replica Set: monitor POD exist
+apiVersion: v1
+#apiVersion: apps/v1
+#kind: ReplicaSet
+kind: ReplicationController
+metadata:
+    name: muapp-rc
+    labels:
+        app:myapp
+        type: front-end
+spec:
+    template:
+        metadata:
+            name: nginx
+            labels:
+                env: production
+        spec:
+            containers:
+                - name: nginx
+                  image: nginx
+                - name: busybox
+                  image: busybox
+    replicas: 3
+    #selector:
+        matchLabels:
+            type: front-end
+            
+Deployment
+kind: Deployment
+kubectl get all
+
+Rollout
+kubectl rollout status deploymen/myapp-deployment
+kubectl rollout history deployment/myapp-deployment
+kubectl set image deployment/myapp-deployment \nginx=nginx:1.9.1
+kucectl rollout undo deployment/myapp-deployment
+
+Service
+curl http://
+NodePort:
+    apiVersion: v1
+    kind: Service
+    metadata:
+        name: myapp-service
+    spec:
+        type: NodePort
+        ports:
+            - targetPort: 80
+              port: 80
+              nodePort: 30008
+        selector:
+            app: myapp
+            type: front-end
+ClusterIP:
+
+LoadBalancer:
+
+
+KubeADM:
+- Master, Worker
+- Docker
+- kubeadm
+- initialize Master
+- POD Network
+- Join Worker Node
+
+Vagrantfile= config VM to create Kube Master and Worker
+vagrant ssh kubemaster
+uptime #test
+logout
+CGroupDrive= only when not using docker
